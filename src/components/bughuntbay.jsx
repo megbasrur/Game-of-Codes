@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Beach from '../assets/beach.png';
 import {Bot} from "lucide-react";
+import { useNavigate } from 'react-router-dom';
 
 const DebugBeachGame = () => {
+  const navigate=useNavigate();
   // Game state
   const [currentBugIndex, setCCurrentBugIndex] = useState(0);
   const [collectedBugs, setCollectedBugs] = useState([]);
@@ -213,7 +215,18 @@ const DebugBeachGame = () => {
             </div>
           )}
         </div>
-        
+        <div>
+          {/* Exit Button */}
+  <div className="absolute top-4 right-4 z-50">
+    <button
+      onClick={() => navigate("/landing")}
+      className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold shadow-lg transition-colors"
+    >
+      Exit
+    </button>
+  </div>
+
+        </div>
         {/* Code Editor */}
         <div className="flex-1 p-4">
           {!gameComplete ? (

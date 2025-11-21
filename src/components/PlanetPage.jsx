@@ -79,7 +79,7 @@ export default function PlanetPage() {
       <motion.img
         src={planet.image}
         layoutId={`planet-${planetId}`}
-        className="absolute top-6 left-6 w-20 h-20"
+        className="absolute top-6 left-6 w-30 h-25"
       />
 
       <motion.h1

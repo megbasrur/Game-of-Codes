@@ -124,17 +124,13 @@ const DebugBeachGame = () => {
           backgroundImage: `url(${Beach})`,
           backgroundBlendMode: 'overlay',
           backgroundPosition: `center ${50 + cameraY * 0.5}%`, // Parallax effect for background
-          transform: `translateY(${cameraY}px)`,
-          transition: 'all 1s ease-in-out'
+          
         }}
       >
         {/* Scrollable game world container */}
         <div 
           className="relative w-full h-full" // Use normal height, not 200vh
-          style={{
-            transform: `translateY(-${cameraY}px)`, // Negative to scroll up
-            transition: 'transform 1s ease-in-out'
-          }}
+          
         >
           {/* Sun 
           <div className="absolute top-8 right-4 w-16 h-16 bg-yellow-400 rounded-full shadow-lg"></div>*/}
@@ -197,17 +193,18 @@ const DebugBeachGame = () => {
         
         {/* Feedback */}
         {feedback && (
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white bg-opacity-95 rounded-lg p-4 shadow-xl text-center max-w-xs">
-            <p className="text-lg font-semibold">{feedback}</p>
-          </div>
-        )}
-      </div>
+  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
+                  bg-white bg-opacity-95 rounded-lg p-4 shadow-xl text-center max-w-xs z-50">
+    <p className="text-lg font-semibold">{feedback}</p>
+  </div>
+)}
+</div>
       
       {/* Right Half - Code Editor */}
       <div className="w-1/2 bg-gray-900 text-white flex flex-col">
         {/* Header */}
         <div className="bg-gray-800 p-4 border-b border-gray-700">
-          <h2 className="text-xl font-bold">Code Debugger</h2>
+          <h2 className="text-xl font-bold">Bug Hunt Bay</h2>
           {!gameComplete && (
             <div className="mt-2">
               <p className="text-sm text-gray-300">Problem {currentBugIndex + 1} of {codeProblems.length}</p>

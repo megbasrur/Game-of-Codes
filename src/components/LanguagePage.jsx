@@ -40,6 +40,20 @@ export default function LanguagePage({ name, description }) {
         }}
       ></div>
 
+        
+                {/* ⬅️ BACK BUTTON */}
+              <motion.button
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                onClick={() => navigate('/landing')} // <-- Navigates back to the Language Page
+                className="absolute top-8 right-10 p-3 bg-white hover:bg-white/30 rounded-full 
+                           shadow-lg transition text-xl font-bold z-20"
+                title="Go back to Java Universe"
+              >
+                Exit
+              </motion.button>
+
       {/* Nebula / Glow Shapes - NO CHANGE */}
       <div className="absolute w-3/5 h-3/5 top-10 left-20 bg-purple-500/50 rounded-full filter blur-3xl animate-pulse opacity-80"></div>
       <div className="absolute w-2/5 h-2/5 bottom-10 right-10 bg-pink-500/40 rounded-full filter blur-3xl animate-pulse opacity-80 animation-delay-2s"></div>

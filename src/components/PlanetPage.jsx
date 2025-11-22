@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+
 
 import Planet1 from '../assets/beachplanet.png';
 import Planet2 from '../assets/treasureplanet.png';
@@ -10,6 +11,7 @@ import Planet6 from '../assets/castle4.png';
 
 export default function PlanetPage() {
   const { planetId } = useParams();
+  const navigate = useNavigate();
 
   const planets = [
     { 
@@ -74,7 +76,19 @@ export default function PlanetPage() {
         }}
       />
 
-        
+        {/* ⬅️ BACK BUTTON */}
+      <motion.button
+        initial={{ opacity: 0, x: -50 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+        onClick={() => navigate('/java')} // <-- Navigates back to the Language Page
+        className="absolute top-8 right-10 p-3 bg-white/30 hover:bg-white/30 rounded-full 
+                   shadow-lg transition text-xl font-bold z-20"
+        title="Go back to Java Universe"
+      >
+        Exit
+      </motion.button>
+
       {/* ⭐ Planet that flew in */}
       <motion.img
         src={planet.image}
@@ -101,23 +115,33 @@ export default function PlanetPage() {
         {planet.desc}
       </motion.p>
 
-      <div className="mt-16 mb-10 w-2/3 flex flex-col gap-6">
-        {planet.games.map((game, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, y: 25 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: 0.7,
-              delay: 1 + i * 0.2,
-            }}
-            className="w-full p-6 bg-gradient-to-r from-purple-500/50 to-pink-400/40 rounded-2xl shadow-xl backdrop-blur-md border border-white/20 text-left text-2xl font-semibold opacity-40"
-          >
-            <h3 className="text-2xl font-bold text-white mb-2">{game.name}</h3>
-            <p className="text-lg text-white/80">{game.desc}</p>
-          </motion.div>
-        ))}
-      </div>
+     <div className="mt-16 mb-10 w-2/3 flex flex-col gap-6">
+  {planet.games.map((game, i) => (
+    <Link to={`/planet/${planetId}/game/${i}`} key={i}>
+      <motion.div
+        initial={{ opacity: 0, y: 25 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{
+          duration: 0.7,
+          delay: 1 + i * 0.2,
+        }}
+        className="w-full p-6 bg-gradient-to-r from-purple-500/50 
+                   to-pink-400/40 rounded-2xl shadow-xl backdrop-blur-md 
+                   border border-white/20 text-left text-2xl font-semibold 
+                   hover:opacity-100 opacity-40 hover:scale-[1.02] 
+                   transition-all cursor-pointer"
+      >
+        <h3 className="text-2xl font-bold text-white mb-2">
+          {typeof game === "string" ? game : game.name}
+        </h3>
+        <p className="text-lg text-white/80">
+          {game.desc || ""}
+        </p>
+      </motion.div>
+    </Link>
+  ))}
+</div>
+
     </div>
   );
 }

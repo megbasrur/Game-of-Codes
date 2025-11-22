@@ -4,6 +4,7 @@ import BeachGame from "./components/bughuntbay";
 import Start from "./components/start";
 import LanguagePage from "./components/LanguagePage";
 import PlanetPage from "./components/PlanetPage";
+import DebugBeachGame from "./components/bughuntbay";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           }
         />
         <Route path="/planet/:planetId" element={<PlanetPage />} />
+        <Route path="/planet/:planetId/game/0" element={<DebugBeachGame />} />
       </Routes>
     </BrowserRouter>
   );

@@ -77,17 +77,17 @@ export default function PlanetPage() {
       />
 
         {/* ⬅️ BACK BUTTON */}
-      <motion.button
-        initial={{ opacity: 0, x: -50 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-        onClick={() => navigate('/java')} // <-- Navigates back to the Language Page
-        className="absolute top-8 right-10 p-3 bg-white/30 hover:bg-white/30 rounded-full 
-                   shadow-lg transition text-xl font-bold z-20"
-        title="Go back to Java Universe"
-      >
-        Exit
-      </motion.button>
+<motion.button
+initial={{ opacity: 0, x: -50 }}
+animate={{ opacity: 1, x: 0 }}
+transition={{ duration: 0.5, delay: 0.1 }}
+onClick={() => navigate('/java')} // <-- Navigates back to the Language Page
+ className="absolute top-8 right-10 p-3 bg-white/30 hover:bg-white/30 rounded-full 
+shadow-lg transition text-xl font-bold z-20"
+title="Go back to Java Universe"
+ >
+Exit
+</motion.button>
 
       {/* ⭐ Planet that flew in */}
       <motion.img

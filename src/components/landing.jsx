@@ -19,6 +19,34 @@ import { useNavigate } from 'react-router-dom';
 export default function GamingLearningPlatform() {
   const navigate = useNavigate();
 
+ const handleLogout = () => {
+  const token = localStorage.getItem("accessToken");  // FIXED
+
+  fetch("https://game-of-codes.onrender.com/gameofcodes/user/logout", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      console.log("Logout response:", data);
+
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("role");
+      localStorage.removeItem("user");
+
+      navigate("/");
+    })
+    .catch((err) => {
+      console.error("Logout error:", err);
+      localStorage.removeItem("accessToken");
+      navigate("/");
+    });
+};
+
+
   const skillLevels = [
     {
       id: 1,
@@ -93,7 +121,15 @@ export default function GamingLearningPlatform() {
           </div>
           <img src={Robot} alt="Robot" className="w-10 h-10" />
         </div>
+         <button
+  onClick={handleLogout}
+  className="text-white bg-red-500 px-4 py-2 rounded-xl hover:bg-red-600 transition"
+>
+  Logout
+</button>
       </header>
+      
+     
 
       {/* Achievement Banner */}
       <div className="mb-8 flex justify-center">

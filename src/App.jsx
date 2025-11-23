@@ -5,12 +5,16 @@ import Start from "./components/start";
 import LanguagePage from "./components/LanguagePage";
 import PlanetPage from "./components/PlanetPage";
 import DebugBeachGame from "./components/bughuntbay";
+import Login from './components/login';
+import Signup from "./components/signup";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Start/>} />
+         <Route path="/login" element={<Login/>} />
+          <Route path="/signup" element={<Signup/>} />
         <Route path="/landing" element={<LandingPage/>} />
         <Route
           path="/java"
@@ -22,7 +26,7 @@ function App() {
           }
         />
         <Route path="/planet/:planetId" element={<PlanetPage />} />
-        <Route path="/planet/:planetId/game/0" element={<DebugBeachGame />} />
+        <Route path="/planet/:1/game/0" element={<DebugBeachGame />} />
       </Routes>
     </BrowserRouter>
   );

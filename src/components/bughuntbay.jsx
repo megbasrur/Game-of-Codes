@@ -242,7 +242,7 @@ const codeProblems = [
 
          {/* Exit */}
           <button
-            onClick={() => navigate(`/planet/${planetId}`)} // <-- UPDATED NAVIGATION
+            onClick={() => navigate('/planet/0')} // <-- UPDATED NAVIGATION
             className="absolute top-4 right-4 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold shadow-lg transition"
           >
             Exit

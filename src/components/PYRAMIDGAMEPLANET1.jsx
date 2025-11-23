@@ -1,12 +1,9 @@
-// src/App.jsx
+// src/components/DessertPyramid.jsx
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
-/* Full corrected app:
-   - desert background placed behind UI (z-index 0)
-   - main container & panels set to higher z-index so visible
-   - right panel has decorative panel-bg (dunes + castle + palms)
-   - bricks large (44x28), pyramid completes when all correct
-   - falling bricks animation, delayed final modal
+/* Dessert Pyramid component (standalone)
+   - paste this file into src/components/DessertPyramid.jsx
+   - import & use in any App: import DessertPyramid from './components/DessertPyramid'
 */
 
 /* ---------- Questions (10) ---------- */
@@ -58,10 +55,10 @@ function computePyramidPositions(bricksCount, baseCols = BASE_COLS) {
   return positions;
 }
 
-/* uploaded castle image path (from your session) */
+/* castle image path (adjust if needed in friend's project) */
 const castleUrl = "/mnt/data/f88f619f-5ac9-4fe4-b8f9-619adab7a357.png";
 
-export default function App() {
+export default function DessertPyramid() {
   const [qIndex, setQIndex] = useState(0);
   const [selected, setSelected] = useState(null);
   const [feedback, setFeedback] = useState("");

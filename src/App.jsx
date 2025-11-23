@@ -7,6 +7,8 @@ import PlanetPage from "./components/PlanetPage";
 import DebugBeachGame from "./components/bughuntbay";
 import Login from './components/login';
 import Signup from "./components/signup";
+import MessageInBottle from './components/messageinabottle';
+import DessertPyramid from "./components/PYRAMIDGAMEPLANET1";
 
 function App() {
   return (
@@ -26,7 +28,9 @@ function App() {
           }
         />
         <Route path="/planet/:planetId" element={<PlanetPage />} />
-        <Route path="/planet/:1/game/0" element={<DebugBeachGame />} />
+        <Route path="/planet/1/game/0" element={<DebugBeachGame />} />
+      <Route path="/planet/1/game/1" element={<MessageInBottle />} />
+      <Route path="/planet/1/game/2" element={<DessertPyramid />} />
       </Routes>
     </BrowserRouter>
   );

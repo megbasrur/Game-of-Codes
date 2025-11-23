@@ -20,7 +20,7 @@ export default function PlanetPage() {
       desc: "Learn the basics of Java. Begin with syntax, variables, print functions and data types used.",
       games:[{ name: "Bug Hunt Bay", desc: "Fix simple syntax errors in Java code and help the robot to collect bugs on the beach." },
         { name: "Message in a Bottle", desc: "Use correct code syntax to send a message across the ocean." },
-        { name: "Sandcastle Variables", desc: "Declare variables to build stronger sandcastles." }
+        { name: "Pyramid Variables", desc: "Declare variables to build strong pyramids." }
       ]
     },
     { 

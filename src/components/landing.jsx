@@ -1,5 +1,5 @@
 import React from 'react';
-import { Play, User, Home, Award, Star, Trophy } from 'lucide-react';
+import { Play, User, Home, Award, Star, Trophy, Zap, ChevronRight } from 'lucide-react';
 import Mario from '../assets/mario.png';
 import Captain from '../assets/captain.png';
 import Darth from '../assets/darth.png';
@@ -19,33 +19,30 @@ import { useNavigate } from 'react-router-dom';
 export default function GamingLearningPlatform() {
   const navigate = useNavigate();
 
- const handleLogout = () => {
-  const token = localStorage.getItem("accessToken");  // FIXED
+  const handleLogout = () => {
+    const token = localStorage.getItem("accessToken");
 
-  fetch("https://game-of-codes.onrender.com/gameofcodes/user/logout", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      console.log("Logout response:", data);
-
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("role");
-      localStorage.removeItem("user");
-
-      navigate("/");
+    fetch("https://game-of-codes.onrender.com/gameofcodes/user/logout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
     })
-    .catch((err) => {
-      console.error("Logout error:", err);
-      localStorage.removeItem("accessToken");
-      navigate("/");
-    });
-};
-
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("Logout response:", data);
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("role");
+        localStorage.removeItem("user");
+        navigate("/");
+      })
+      .catch((err) => {
+        console.error("Logout error:", err);
+        localStorage.removeItem("accessToken");
+        navigate("/");
+      });
+  };
 
   const skillLevels = [
     {
@@ -85,19 +82,19 @@ export default function GamingLearningPlatform() {
   ];
 
   return (
-   <div className="w-screen min-h-screen relative overflow-hidden p-8">
-  {/* Galaxy Background */}
-  <div
-    className="absolute w-full h-full top-0 left-0"
-    style={{
-      background: `radial-gradient(circle at 30% 30%, #2B0B5A 0%, #1A0C3F 60%), 
-                   linear-gradient(135deg, #2F2F6F 0%, #6B6CD9 70%, #A44EFF 100%)`,
-    }}
-  ></div>
+    <div className="w-screen min-h-screen relative overflow-hidden p-8">
+      {/* Galaxy Background */}
+      <div
+        className="absolute w-full h-full top-0 left-0"
+        style={{
+          background: `radial-gradient(circle at 30% 30%, #2B0B5A 0%, #1A0C3F 60%), 
+                       linear-gradient(135deg, #2F2F6F 0%, #6B6CD9 70%, #A44EFF 100%)`,
+        }}
+      ></div>
 
-  {/* Soft Nebula / Glow Shapes */}
-  <div className="absolute w-3/5 h-3/5 top-10 left-20 bg-purple-500/50 rounded-full filter blur-3xl animate-pulse"></div>
-  <div className="absolute w-2/5 h-2/5 bottom-10 right-10 bg-pink-500/40 rounded-full filter blur-3xl animate-pulse"></div>
+      {/* Soft Nebula / Glow Shapes */}
+      <div className="absolute w-3/5 h-3/5 top-10 left-20 bg-purple-500/50 rounded-full filter blur-3xl animate-pulse"></div>
+      <div className="absolute w-2/5 h-2/5 bottom-10 right-10 bg-pink-500/40 rounded-full filter blur-3xl animate-pulse"></div>
 
       {/* Header */}
       <header className="relative z-10 flex items-center justify-between p-4 bg-black rounded-3xl backdrop-blur-sm border-b border-white/70 mb-10">
@@ -121,15 +118,13 @@ export default function GamingLearningPlatform() {
           </div>
           <img src={Robot} alt="Robot" className="w-10 h-10" />
         </div>
-         <button
-  onClick={handleLogout}
-  className="text-white bg-red-500 px-4 py-2 rounded-xl hover:bg-red-600 transition"
->
-  Logout
-</button>
+        <button
+          onClick={handleLogout}
+          className="text-white bg-red-500 px-4 py-2 rounded-xl hover:bg-red-600 transition"
+        >
+          Logout
+        </button>
       </header>
-      
-     
 
       {/* Achievement Banner */}
       <div className="mb-8 flex justify-center">
@@ -144,61 +139,132 @@ export default function GamingLearningPlatform() {
         </div>
       </div>
 
-      {/* Skill Level Rows */}
- <div className="space-y-12 relative z-10">
-  {skillLevels.map((level) => (
-    <div key={level.id} className="flex items-start gap-6">
-      
-      {/* Level Div */}
-      <div
-        className={`relative w-15 h-70 bg-black rounded-4xl flex items-center border-1 border-gray-400 justify-center text-white font-bold shadow-lg`}
-      >
-        <span className="transform -rotate-90 text-3xl translate-y-4 -translate-x-1">{level.level}</span>
-        <img
-          src={level.character}
-          alt={level.level}
-          className="w-12 h-12 absolute top-3 right-1 rounded-full shadow"
-        />
-      </div>
-
-      {/* Skill Cards */}
-      <div className="flex gap-6 flex-wrap">
-        {level.skills.map((skill, index) => (
+      {/* ── CAREER ROADMAP QUIZ BANNER ─────────────────────────── */}
+      <div className="relative z-10 mb-10 max-w-6xl mx-auto">
+        <div
+          className="relative overflow-hidden rounded-3xl border border-purple-500/40 shadow-2xl shadow-purple-900/50 cursor-pointer group"
+          onClick={() => navigate('/career-quiz')}
+        >
+          {/* Background gradient */}
           <div
-            key={index}
-            className="w-sm h-70 bg-gradient-to-br from-gray-800 via-gray-900 to-gray-700 rounded-2xl shadow-2xl flex flex-col items-center justify-start cursor-pointer hover:scale-105 transition-transform relative overflow-hidden"
-            onClick={() => navigate(skill.path)}
-          >
-            {/* Top Half - Custom Image */}
-            <div className="w-full h-1/2 flex items-center justify-center">
+            className="absolute inset-0"
+            style={{
+              background: 'linear-gradient(135deg, rgba(88,28,135,0.85) 0%, rgba(109,40,217,0.7) 40%, rgba(219,39,119,0.6) 100%)',
+            }}
+          />
+          {/* Animated glow orb */}
+          <div className="absolute -top-8 -right-8 w-48 h-48 bg-pink-500/30 rounded-full blur-3xl pointer-events-none group-hover:scale-110 transition-transform duration-500" />
+          <div className="absolute -bottom-6 left-12 w-36 h-36 bg-purple-500/25 rounded-full blur-2xl pointer-events-none" />
+
+          {/* Starfield dots */}
+          {[...Array(18)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute rounded-full bg-white pointer-events-none"
+              style={{
+                width: Math.random() * 2 + 1,
+                height: Math.random() * 2 + 1,
+                top: `${Math.random() * 100}%`,
+                left: `${Math.random() * 100}%`,
+                opacity: 0.2 + Math.random() * 0.3,
+                animation: `twinkle ${2 + Math.random() * 3}s ${Math.random() * 2}s ease-in-out infinite`,
+              }}
+            />
+          ))}
+
+          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6 px-8 py-7">
+            {/* Left: icon + text */}
+            <div className="flex items-center gap-5">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-700/50 flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                <Zap className="w-8 h-8 text-white" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-xs font-bold tracking-widest text-purple-300 font-mono uppercase">New Feature</span>
+                  <span className="bg-yellow-400/20 border border-yellow-400/40 text-yellow-300 text-xs font-bold px-2 py-0.5 rounded-full font-mono">ML-Powered</span>
+                </div>
+                <h3 className="text-2xl font-extrabold text-white tracking-tight leading-tight">
+                  Discover Your Career Path
+                </h3>
+                <p className="text-purple-200/70 text-sm mt-1 max-w-md leading-relaxed">
+                  Take a 25-question RIASEC assessment. Our AI matches you to the perfect tech career and tells you exactly which course to start first.
+                </p>
+              </div>
+            </div>
+
+            {/* Right: stats + CTA */}
+            <div className="flex flex-col items-center md:items-end gap-4 flex-shrink-0">
+              <div className="flex gap-3">
+                {[["25","Questions"],["15","Careers"],["4","Courses"]].map(([val, lbl]) => (
+                  <div key={lbl} className="bg-white/10 border border-white/15 rounded-xl px-3 py-2 text-center backdrop-blur-sm">
+                    <div className="text-lg font-extrabold text-white font-mono leading-none">{val}</div>
+                    <div className="text-xs text-purple-300/70 mt-0.5">{lbl}</div>
+                  </div>
+                ))}
+              </div>
+              <button className="flex items-center gap-2 bg-white text-purple-900 font-bold px-6 py-3 rounded-2xl shadow-lg hover:bg-purple-50 transition-all group-hover:scale-105 duration-200 text-sm whitespace-nowrap">
+                Start Assessment
+                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* ── END CAREER ROADMAP QUIZ BANNER ─────────────────────── */}
+
+      {/* Skill Level Rows */}
+      <div className="space-y-12 relative z-10">
+        {skillLevels.map((level) => (
+          <div key={level.id} className="flex items-start gap-6">
+
+            {/* Level Div */}
+            <div
+              className={`relative w-15 h-70 bg-black rounded-4xl flex items-center border-1 border-gray-400 justify-center text-white font-bold shadow-lg`}
+            >
+              <span className="transform -rotate-90 text-3xl translate-y-4 -translate-x-1">{level.level}</span>
               <img
-                src={skill.image}
-                alt={skill.name}
-                className="w-full h-full object-cover rounded-t-2xl"
+                src={level.character}
+                alt={level.level}
+                className="w-12 h-12 absolute top-3 right-1 rounded-full shadow"
               />
             </div>
 
-            {/* Bottom Half - Info */}
-            <div className="w-full h-1/2 flex flex-col items-center justify-center space-y-2 p-3">
-              <span className="text-white font-bold text-xl">{skill.name}</span>
-              <div className="flex items-center space-x-2">
-                <span className="text-sm text-yellow-300 bg-gray-700 px-2 py-1 rounded-full">Level 3</span>
-                <span className="text-sm text-green-300 bg-gray-700 px-2 py-1 rounded-full">150 pts</span>
-              </div>
-              <div className="mt-2">
-                <button className="bg-green-500 hover:bg-green-600 p-3 rounded-full shadow-lg">
-                  <Play className="w-5 h-5 text-white" />
-                </button>
-              </div>
+            {/* Skill Cards */}
+            <div className="flex gap-6 flex-wrap">
+              {level.skills.map((skill, index) => (
+                <div
+                  key={index}
+                  className="w-sm h-70 bg-gradient-to-br from-gray-800 via-gray-900 to-gray-700 rounded-2xl shadow-2xl flex flex-col items-center justify-start cursor-pointer hover:scale-105 transition-transform relative overflow-hidden"
+                  onClick={() => navigate(skill.path)}
+                >
+                  {/* Top Half - Custom Image */}
+                  <div className="w-full h-1/2 flex items-center justify-center">
+                    <img
+                      src={skill.image}
+                      alt={skill.name}
+                      className="w-full h-full object-cover rounded-t-2xl"
+                    />
+                  </div>
+
+                  {/* Bottom Half - Info */}
+                  <div className="w-full h-1/2 flex flex-col items-center justify-center space-y-2 p-3">
+                    <span className="text-white font-bold text-xl">{skill.name}</span>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm text-yellow-300 bg-gray-700 px-2 py-1 rounded-full">Level 3</span>
+                      <span className="text-sm text-green-300 bg-gray-700 px-2 py-1 rounded-full">150 pts</span>
+                    </div>
+                    <div className="mt-2">
+                      <button className="bg-green-500 hover:bg-green-600 p-3 rounded-full shadow-lg">
+                        <Play className="w-5 h-5 text-white" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         ))}
       </div>
-    </div>
-  ))}
-</div>
-
-
 
       {/* Tailwind Animations */}
       <style>

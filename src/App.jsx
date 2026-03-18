@@ -7,6 +7,7 @@ import PlanetPage from "./components/PlanetPage";
 import Login from './components/login';
 import Signup from "./components/signup";
 import PlanetGame from "./components/PlanetGame";
+import CareerQuiz from "./components/CareerQuiz";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
         />
         <Route path="/planet/:planetId" element={<PlanetPage />} />
         <Route path="/planet/:planetId/game/:gameId" element={<PlanetGame />} />
+        <Route path="/career-quiz" element={<CareerQuiz />} />
       </Routes>
     </BrowserRouter>
   );

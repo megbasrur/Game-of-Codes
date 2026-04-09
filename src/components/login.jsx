@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Bg from "../assets/bg.png";
 import { useNavigate } from "react-router-dom";
+import { apiRequest } from "../lib/api";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -17,35 +18,23 @@ export default function Login() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
-
-    fetch("https://game-of-codes.onrender.com/gameofcodes/user/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    })
-      .then((res) => res.json())
-     .then((data) => {
-    console.log("LOGIN RESPONSE:", data);
-
-    if (data.token) {
-        setSuccess("Login successful!");
-
-        localStorage.setItem("accessToken", data.token);
-
-        setTimeout(() => navigate("/landing"), 800);
-    } else {
-        setError("Invalid email or password!");
-    }
-})
-
-      .catch((err) => {
-        console.error("LOGIN ERROR:", err);
-        setError("Something went wrong. Try again!");
+    try {
+      const data = await apiRequest("/auth/login", {
+        method: "POST",
+        body: JSON.stringify(form),
       });
+      localStorage.setItem("accessToken", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem("role", data.user.role);
+      setSuccess("Login successful!");
+      setTimeout(() => navigate("/landing"), 800);
+    } catch (err) {
+      setError(err.message || "Invalid email or password");
+    }
   };
 
   return (

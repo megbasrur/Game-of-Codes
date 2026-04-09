@@ -1,5 +1,7 @@
 // src/components/DessertPyramid.jsx
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { apiRequest } from "../lib/api";
+import { useNavigate } from "react-router-dom";
 
 /* Dessert Pyramid component (standalone)
    - paste this file into src/components/DessertPyramid.jsx
@@ -59,6 +61,7 @@ function computePyramidPositions(bricksCount, baseCols = BASE_COLS) {
 const castleUrl = "/mnt/data/f88f619f-5ac9-4fe4-b8f9-619adab7a357.png";
 
 export default function DessertPyramid() {
+  const navigate = useNavigate();
   const [qIndex, setQIndex] = useState(0);
   const [selected, setSelected] = useState(null);
   const [feedback, setFeedback] = useState("");
@@ -70,6 +73,8 @@ export default function DessertPyramid() {
 
   // modal show after delay so user can admire pyramid
   const [showModal, setShowModal] = useState(false);
+  const [progressSaved, setProgressSaved] = useState(false);
+  const [saveStatus, setSaveStatus] = useState("");
   const modalTimerRef = useRef(null);
 
   // right panel scale
@@ -117,6 +122,36 @@ export default function DessertPyramid() {
     else clearModalTimer();
     return () => clearModalTimer();
   }, [qIndex, selected, bricksCount, capacity]);
+
+  useEffect(() => {
+    if (!showModal || progressSaved) return;
+    const score = Math.max(10, correctCount * 5);
+    apiRequest("/progress/pyramid-variables/complete", {
+      method: "POST",
+      body: JSON.stringify({ score, completed: true }),
+    })
+      .then(() => {
+        setProgressSaved(true);
+        setSaveStatus("Progress saved.");
+      })
+      .catch(() => {
+        setSaveStatus("Could not save progress. Try again.");
+      });
+  }, [showModal, progressSaved, correctCount]);
+
+  async function handleSaveProgress() {
+    const score = Math.max(10, correctCount * 5);
+    try {
+      await apiRequest("/progress/pyramid-variables/complete", {
+        method: "POST",
+        body: JSON.stringify({ score, completed: true }),
+      });
+      setProgressSaved(true);
+      setSaveStatus("Progress saved.");
+    } catch {
+      setSaveStatus("Could not save progress. Try again.");
+    }
+  }
 
   // distribute bricks to complete pyramid across remaining questions
   function bricksToAddForCorrect(currentBricks, questionsRemaining) {
@@ -174,6 +209,8 @@ export default function DessertPyramid() {
     setWrongCount(0);
     clearModalTimer();
     setShowModal(false);
+    setProgressSaved(false);
+    setSaveStatus("");
   }
 
   const totalAnswered = correctCount + wrongCount;
@@ -225,10 +262,19 @@ export default function DessertPyramid() {
           position: "relative",
           zIndex: 3
         }}>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+            <button onClick={() => navigate("/planet/0")} style={{ padding: "8px 12px", borderRadius: 8, border: "2px solid #000", background: "#fff", cursor: "pointer" }}>
+              Exit
+            </button>
+            <button onClick={handleSaveProgress} style={{ padding: "8px 12px", borderRadius: 8, border: "2px solid #000", background: "#dff7df", cursor: "pointer" }}>
+              Save Progress
+            </button>
+          </div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
             <h1 style={{ margin: 0, fontSize: 26 }}>🍰 Dessert Pyramid — Learn Java Types</h1>
             <div style={{ fontSize: 18, fontWeight: 700 }}>Health: {health}%</div>
           </div>
+          {saveStatus && <p style={{ marginTop: 8, fontWeight: 700 }}>{saveStatus}</p>}
 
           <div style={{ marginTop: 12, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <div style={{ fontWeight: 700, fontSize: 18 }}>Question {qIndex + 1} / {QUESTIONS.length}</div>
@@ -419,6 +465,8 @@ export default function DessertPyramid() {
             <p style={{ marginTop: 18 }}>{accuracy >= 75 ? "Great job! Your dessert pyramid stands tall." : "Nice attempt — try again to build a taller pyramid!"}</p>
 
             <div style={{ display: "flex", gap: 12, justifyContent: "center", marginTop: 18 }}>
+              <button onClick={handleSaveProgress} style={{ padding: "10px 16px", fontSize: 16, borderRadius: 8, border: "2px solid #000", background: "#dff7df", cursor: "pointer" }}>Save Progress</button>
+              <button onClick={() => navigate("/planet/0")} style={{ padding: "10px 16px", fontSize: 16, borderRadius: 8, border: "2px solid #000", background: "#fff", cursor: "pointer" }}>Exit</button>
               <button onClick={handleRestart} style={{ padding: "10px 16px", fontSize: 16, borderRadius: 8, border: "2px solid #000", background: "#ffd6d6", cursor: "pointer" }}>Restart</button>
               <button onClick={() => setShowModal(false)} style={{ padding: "10px 16px", fontSize: 16, borderRadius: 8, border: "2px solid #000", background: "#dff7df", cursor: "pointer" }}>Close</button>
             </div>

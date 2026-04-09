@@ -1,5 +1,7 @@
 import { useMemo, useState } from "react";
 import Editor from "@monaco-editor/react";
+import { apiRequest } from "../lib/api";
+import { useNavigate } from "react-router-dom";
 
 /* -------------------------
    Helper: escape RegExp
@@ -127,12 +129,15 @@ function BottleSVG() {
    MAIN COMPONENT (READY TO USE)
 ------------------------- */
 export default function MessageInBottle({ awardXp = 10 }) {
+  const navigate = useNavigate();
   const [code, setCode] = useState("");
   const [feedback, setFeedback] = useState("");
   const [xp, setXp] = useState(0);
   const [sent, setSent] = useState(false);
   const [consoleData, setConsoleData] = useState({ stdin: "hello ocean", stdout: "", logs: [] });
   const [activeConsoleTab, setActiveConsoleTab] = useState("output");
+  const [progressSaved, setProgressSaved] = useState(false);
+  const [saveStatus, setSaveStatus] = useState("");
 
   const starter = useMemo(
     () =>
@@ -158,8 +163,34 @@ System.out.println(msg);
       setXp((x) => x + awardXp);
       setSent(false);
       requestAnimationFrame(() => setSent(true));
+      if (!progressSaved) {
+        apiRequest("/progress/message-in-a-bottle/complete", {
+          method: "POST",
+          body: JSON.stringify({ score: 40, completed: true }),
+        })
+          .then(() => {
+            setProgressSaved(true);
+            setSaveStatus("Progress saved.");
+          })
+          .catch(() => {
+            setSaveStatus("Could not save progress. Try again.");
+          });
+      }
     } else {
       setSent(false);
+    }
+  }
+
+  async function handleSaveProgress() {
+    try {
+      await apiRequest("/progress/message-in-a-bottle/complete", {
+        method: "POST",
+        body: JSON.stringify({ score: 40, completed: true }),
+      });
+      setProgressSaved(true);
+      setSaveStatus("Progress saved.");
+    } catch {
+      setSaveStatus("Could not save progress. Try again.");
     }
   }
 
@@ -168,10 +199,16 @@ System.out.println(msg);
     setFeedback("");
     setSent(false);
     setConsoleData({ stdin: "hello ocean", stdout: "", logs: [] });
+    setProgressSaved(false);
+    setSaveStatus("");
   }
 
   return (
     <div className="game-grid">
+      <div className="row between" style={{ marginBottom: 8 }}>
+        <h2 style={{ margin: 0 }}>Message in a Bottle</h2>
+        <button className="btn" onClick={() => navigate("/planet/0")}>Exit</button>
+      </div>
 
       {/* 💠 Inject CSS directly so no external file needed */}
       <style>{`
@@ -298,9 +335,11 @@ System.out.println(msg);
 
         <div className="row gap mt">
           <button className="btn primary" onClick={handleSend}>Run & Send Bottle 🌊</button>
+          <button className="btn" onClick={handleSaveProgress}>Save Progress</button>
           <button className="btn" onClick={handleReset}>Reset</button>
           <p className={`feedback ${feedback.startsWith("Perfect") ? "ok" : "err"}`}>{feedback}</p>
         </div>
+        {saveStatus && <p className={`feedback ${saveStatus.includes("saved") ? "ok" : "err"}`}>{saveStatus}</p>}
       </section>
 
       {/* OCEAN */}

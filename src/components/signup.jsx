@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Bg from "../assets/bg.png";
 import { useNavigate } from "react-router-dom";
+import { apiRequest } from "../lib/api";
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -25,40 +26,23 @@ export default function Signup() {
     });
   };
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
-
-   fetch("https://game-of-codes.onrender.com/gameofcodes/user/signup", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(form),
-})
-  .then(async (res) => {
-    const raw = await res.text();
-    console.log("BACKEND RESPONSE:", raw);
-
-    if (!res.ok) throw new Error(raw);
-    return JSON.parse(raw);
-  })
-  .then((data) => {
-    console.log("SUCCESS:", data);
-
-    setSuccess("Signup successful!");
-    setError("");
-
-    // Navigate after 1 second
-    setTimeout(() => {
-      navigate("/login");
-    }, 1000);
-  })
-  .catch((err) => {
-    console.error("ERROR:", err);
-    setError("Signup failed: " + err.message);
-    setSuccess("");
-  });
-
+    try {
+      await apiRequest("/auth/signup", {
+        method: "POST",
+        body: JSON.stringify(form),
+      });
+      setSuccess("Signup successful!");
+      setTimeout(() => {
+        navigate("/login");
+      }, 1000);
+    } catch (err) {
+      setError("Signup failed: " + err.message);
+      setSuccess("");
+    }
   };
 
   return (

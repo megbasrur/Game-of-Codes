@@ -1,0 +1,31 @@
+{
+  "users": [],
+  "games": [
+    {
+      "id": "bug-hunt-bay",
+      "title": "Bug Hunt Bay",
+      "planetId": "0",
+      "difficulty": "beginner",
+      "points": 50,
+      "isActive": true
+    },
+    {
+      "id": "message-in-a-bottle",
+      "title": "Message in a Bottle",
+      "planetId": "0",
+      "difficulty": "beginner",
+      "points": 40,
+      "isActive": true
+    },
+    {
+      "id": "pyramid-variables",
+      "title": "Pyramid Variables",
+      "planetId": "0",
+      "difficulty": "beginner",
+      "points": 35,
+      "isActive": true
+    }
+  ],
+  "progress": [],
+  "sessions": []
+}

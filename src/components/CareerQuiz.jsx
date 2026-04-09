@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, RotateCcw, Star, Trophy, ChevronRight } from 'lucide-react';
+import { apiRequest } from '../lib/api';
 
 // ── RIASEC + ML DATA ─────────────────────────────────────────────────────────
 const MODEL = {
@@ -633,6 +634,20 @@ function ResultsScreen({answers, onRestart}) {
     boxShadow:'0 4px 24px rgba(124,58,237,0.2)',
   };
 
+  useEffect(() => {
+    apiRequest("/career-result", {
+      method: "POST",
+      body: JSON.stringify({
+        career: top.career,
+        matchPercent: pct,
+        hollandCode: code,
+        recommendedPath: courses.path,
+      }),
+    }).catch(() => {
+      // no-op
+    });
+  }, [top.career, pct, code, courses.path]);
+
   return (
     <div className="relative z-10 max-w-2xl mx-auto px-4 py-12">
 
@@ -778,6 +793,16 @@ export default function CareerRoadmap() {
   const [screen, setScreen] = useState('welcome');
   const [current, setCurrent] = useState(0);
   const [answers, setAnswers] = useState({});
+
+  useEffect(() => {
+    apiRequest("/features")
+      .then((data) => {
+        if (!data.features?.careerGuidance) {
+          navigate("/landing");
+        }
+      })
+      .catch(() => navigate("/login"));
+  }, [navigate]);
 
   const handleAnswer = (qid,letter) => setAnswers(prev=>({...prev,[qid]:letter}));
   const handleNext = () => {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Play, User, Home, Award, Star, Trophy, Zap, ChevronRight } from 'lucide-react';
 import Mario from '../assets/mario.png';
 import Captain from '../assets/captain.png';
@@ -15,33 +15,69 @@ import FlaskIcon from '../assets/flask.png';
 import JSIcon from '../assets/js.png';
 
 import { useNavigate } from 'react-router-dom';
+import { apiRequest } from '../lib/api';
 
 export default function GamingLearningPlatform() {
   const navigate = useNavigate();
+  const [profile, setProfile] = useState(null);
+  const [leaderboard, setLeaderboard] = useState([]);
+  const [summary, setSummary] = useState({ totalScore: 0, completedGames: 0 });
+  const [careerResult, setCareerResult] = useState(null);
+  const [progressRows, setProgressRows] = useState([]);
+  const [gamesMap, setGamesMap] = useState({});
 
-  const handleLogout = () => {
-    const token = localStorage.getItem("accessToken");
+  useEffect(() => {
+    let isMounted = true;
+    const load = async () => {
+      try {
+        const [me, board, progress, career, games] = await Promise.all([
+          apiRequest("/users/me"),
+          apiRequest("/leaderboard?limit=5"),
+          apiRequest("/progress/me"),
+          apiRequest("/career-result/me"),
+          apiRequest("/games"),
+        ]);
+        if (!isMounted) return;
+        setProfile(me.user);
+        setLeaderboard(board.leaderboard || []);
+        setSummary(progress.summary || { totalScore: 0, completedGames: 0 });
+        setProgressRows(progress.progress || []);
+        setCareerResult(career.careerResult || null);
+        setGamesMap(
+          Object.fromEntries((games.games || []).map((g) => [g.id, g.title]))
+        );
+      } catch {
+        navigate("/login");
+      }
+    };
 
-    fetch("https://game-of-codes.onrender.com/gameofcodes/user/logout", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("Logout response:", data);
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("role");
-        localStorage.removeItem("user");
-        navigate("/");
-      })
-      .catch((err) => {
-        console.error("Logout error:", err);
-        localStorage.removeItem("accessToken");
-        navigate("/");
-      });
+    load();
+    const timer = setInterval(async () => {
+      try {
+        const board = await apiRequest("/leaderboard?limit=5");
+        if (isMounted) setLeaderboard(board.leaderboard || []);
+      } catch {
+        // no-op
+      }
+    }, 7000);
+
+    return () => {
+      isMounted = false;
+      clearInterval(timer);
+    };
+  }, [navigate]);
+
+  const handleLogout = async () => {
+    try {
+      await apiRequest("/auth/logout", { method: "POST" });
+    } catch {
+      // no-op
+    } finally {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("role");
+      localStorage.removeItem("user");
+      navigate("/");
+    }
   };
 
   const skillLevels = [
@@ -102,13 +138,19 @@ export default function GamingLearningPlatform() {
           <div className="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center">
             <User className="w-6 h-6 text-white" />
           </div>
-          <span className="text-white font-medium text-xl">UserName</span>
+          <span className="text-white font-medium text-xl">{profile?.name || "User"}</span>
         </div>
         <nav className="flex items-center space-x-8">
-          <button className="text-white hover:text-purple-300 flex items-center gap-2">
+          <button
+            onClick={() => navigate("/landing")}
+            className="text-white hover:text-purple-300 flex items-center gap-2"
+          >
             <Home className="w-6 h-6" /> Home
           </button>
-          <button className="text-white hover:text-purple-300 flex items-center gap-2">
+          <button
+            onClick={() => navigate("/leaderboard")}
+            className="text-white hover:text-purple-300 flex items-center gap-2"
+          >
             <Award className="w-6 h-6" /> Leaderboard
           </button>
         </nav>
@@ -139,11 +181,16 @@ export default function GamingLearningPlatform() {
         </div>
       </div>
 
-      {/* ── CAREER ROADMAP QUIZ BANNER ─────────────────────────── */}
+      {/* ── CAREER / PARENTAL GUIDANCE BANNER ─────────────────── */}
       <div className="relative z-10 mb-10 max-w-6xl mx-auto">
+        {profile?.features?.careerGuidance ? (
         <div
           className="relative overflow-hidden rounded-3xl border border-purple-500/40 shadow-2xl shadow-purple-900/50 cursor-pointer group"
-          onClick={() => navigate('/career-quiz')}
+          onClick={() => {
+            if (profile?.features?.careerGuidance) {
+              navigate('/career-quiz');
+            }
+          }}
         >
           {/* Background gradient */}
           <div
@@ -184,10 +231,12 @@ export default function GamingLearningPlatform() {
                   <span className="bg-yellow-400/20 border border-yellow-400/40 text-yellow-300 text-xs font-bold px-2 py-0.5 rounded-full font-mono">ML-Powered</span>
                 </div>
                 <h3 className="text-2xl font-extrabold text-white tracking-tight leading-tight">
-                  Discover Your Career Path
+                  {profile?.features?.careerGuidance ? "Discover Your Career Path" : "Parental Guidance Enabled"}
                 </h3>
                 <p className="text-purple-200/70 text-sm mt-1 max-w-md leading-relaxed">
-                  Take a 25-question RIASEC assessment. Our AI matches you to the perfect tech career and tells you exactly which course to start first.
+                  {profile?.features?.careerGuidance
+                    ? "Take a 25-question assessment to discover your career path."
+                    : "Ages 8-12 are in guided mode: parental guidance is available and career guidance is hidden."}
                 </p>
               </div>
             </div>
@@ -203,14 +252,50 @@ export default function GamingLearningPlatform() {
                 ))}
               </div>
               <button className="flex items-center gap-2 bg-white text-purple-900 font-bold px-6 py-3 rounded-2xl shadow-lg hover:bg-purple-50 transition-all group-hover:scale-105 duration-200 text-sm whitespace-nowrap">
-                Start Assessment
+                {profile?.features?.careerGuidance ? "Start Assessment" : "Guided Mode"}
                 <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
           </div>
         </div>
+        ) : (
+          <div className="rounded-3xl border border-purple-500/40 shadow-2xl shadow-purple-900/50 bg-black/40 p-6 text-white">
+            <h3 className="text-2xl font-extrabold">Parental Guidance Mode</h3>
+            <p className="text-purple-200/80 mt-2">
+              Career path assessment is hidden for parents and children below 12.
+            </p>
+          </div>
+        )}
       </div>
-      {/* ── END CAREER ROADMAP QUIZ BANNER ─────────────────────── */}
+      {/* ── END CAREER / PARENTAL GUIDANCE BANNER ─────────────── */}
+
+      <div className="relative z-10 mb-8 max-w-6xl mx-auto">
+        <div className="bg-black/40 border border-white/20 rounded-2xl p-4 text-white">
+          <h4 className="font-bold mb-2">Game Progress</h4>
+          {progressRows.length === 0 && (
+            <p className="text-sm text-purple-200">No games played yet.</p>
+          )}
+          {progressRows.map((row) => (
+            <div
+              key={row.gameId}
+              className="flex items-center justify-between bg-white/10 border border-white/15 rounded-xl px-3 py-2 mb-2"
+            >
+              <p className="text-sm font-semibold">{gamesMap[row.gameId] || row.gameId}</p>
+              <p className="text-sm text-purple-200">Highest Score: {row.bestScore || 0}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {profile?.features?.careerGuidance && careerResult && (
+        <div className="relative z-10 mb-8 max-w-6xl mx-auto bg-black/40 border border-white/20 rounded-2xl p-5 text-white">
+          <h4 className="font-bold mb-2">Latest Career Test Result</h4>
+          <p className="text-sm">Best Match: {careerResult.career}</p>
+          <p className="text-sm">Match: {careerResult.matchPercent}%</p>
+          <p className="text-sm">Holland Code: {careerResult.hollandCode}</p>
+          <p className="text-sm">Recommended Path: {(careerResult.recommendedPath || []).join(" -> ")}</p>
+        </div>
+      )}
 
       {/* Skill Level Rows */}
       <div className="space-y-12 relative z-10">
@@ -277,6 +362,11 @@ export default function GamingLearningPlatform() {
           @keyframes float {
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-8px); }
+          }
+
+          @keyframes floatPlanet {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-6px) scale(1.02); }
           }
         `}
       </style>

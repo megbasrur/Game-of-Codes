@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Beach from '../assets/beach.png';
 import { useNavigate, useParams } from 'react-router-dom';
+import { apiRequest } from "../lib/api";
 
 const DebugBeachGame = () => {
   const navigate = useNavigate();
@@ -98,7 +99,7 @@ const codeProblems = [
 
         setFeedback('🎉 Correct! Bug collected!');
 
-        setTimeout(() => {
+            setTimeout(async () => {
           if (currentBugIndex < codeProblems.length - 1) {
             setCCurrentBugIndex(currentBugIndex + 1);
             setFeedback('');
@@ -107,6 +108,14 @@ const codeProblems = [
           } else {
             setGameComplete(true);
             setFeedback('🏆 Congratulations! All bugs collected!');
+                try {
+                  await apiRequest("/progress/bug-hunt-bay/complete", {
+                    method: "POST",
+                    body: JSON.stringify({ score: 50, completed: true }),
+                  });
+                } catch {
+                  // no-op
+                }
           }
         }, 1500);
       }

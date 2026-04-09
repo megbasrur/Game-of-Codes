@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
-
 import Planet1 from '../assets/beachplanet.png';
 import Planet2 from '../assets/treasureplanet.png';
 import Planet3 from '../assets/fairyplanet.png';
@@ -27,7 +26,8 @@ export default function PlanetPage() {
       name: "Variable Valley", 
       image: Planet3,
       desc: "Master variables, operators and expressions through fun challenges.",
-      games: ["Potion Mix-up", "Enchanted Math Garden","Talk to the Troll"] 
+      games: [{ name: "Potion Mix-up", desc: "Learn variables, arithmetic operations, and naming rules by brewing magical potions."},
+         "Enchanted Math Garden","Talk to the Troll"] 
     },
     { 
       name: "Treasure Island", 

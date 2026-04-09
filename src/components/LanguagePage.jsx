@@ -10,7 +10,7 @@ import Planet6 from '../assets/castle4.png';
 
 export default function LanguagePage({ name, description }) {
 
-  const orbitImages = [Planet1, Planet2, Planet3, Planet5, Planet6];
+  const orbitImages = [Planet1, Planet3, Planet2, Planet5, Planet6];
   const orbitRadius = 265;
   const orbitDuration = "20s";
   const navigate = useNavigate();

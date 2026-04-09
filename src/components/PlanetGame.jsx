@@ -2,11 +2,13 @@ import { useParams } from "react-router-dom";
 import DebugBeachGame from "./bughuntbay";
 import MessageInBottle from "./messageinabottle";
 import DessertPyramid from "./PYRAMIDGAMEPLANET1";
+import PotionMixUp from "./PotionMixUp";
 
 
 // Map each planet to its games array
 const planetGames = {
-  0: [DebugBeachGame, MessageInBottle, DessertPyramid], // Planet 1 games
+  0: [DebugBeachGame, MessageInBottle, DessertPyramid],
+  1: [PotionMixUp] // Planet 1 games
 };
 
 export default function PlanetGame() {

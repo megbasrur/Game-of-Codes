@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, RotateCcw, Star, Trophy, ChevronRight } from 'lucide-react';
 import { apiRequest } from '../lib/api';
+import AppHeader from './AppHeader';
 
 // ── RIASEC + ML DATA ─────────────────────────────────────────────────────────
 const MODEL = {
@@ -187,17 +188,8 @@ function WelcomeScreen({onStart}) {
         </span>
       </h1>
       <p className="text-gray-300 text-lg max-w-md mb-10 leading-relaxed">
-        Answer 25 questions. Our RIASEC-powered ML model matches you to your ideal career and tells you exactly which course to start.
+       A personalized assessment to understand your interests and guide your coding journey.
       </p>
-      <div className="grid grid-cols-3 gap-4 mb-10 w-full max-w-sm">
-        {[["25","Questions"],["15","Career Paths"],["4","Courses"]].map(([val,lbl])=>(
-          <div key={lbl} className="rounded-2xl p-4 text-center"
-            style={{background:'rgba(139,92,246,0.18)',border:'1.5px solid rgba(167,139,250,0.45)'}}>
-            <div className="text-2xl font-extrabold text-purple-200 font-mono">{val}</div>
-            <div className="text-xs text-gray-300 mt-1">{lbl}</div>
-          </div>
-        ))}
-      </div>
       <div className="flex flex-wrap gap-2 justify-center mb-10">
         {Object.values(COURSE_INFO).map(c=>(
           <span key={c.name} className="rounded-full px-4 py-1.5 text-sm font-semibold text-purple-200"
@@ -212,7 +204,6 @@ function WelcomeScreen({onStart}) {
         <Star className="w-5 h-5"/> Start Career Assessment
         <ChevronRight className="w-5 h-5"/>
       </button>
-      <p className="text-gray-500 text-xs mt-6 font-mono">RF Classifier · 150-student dataset · RIASEC-grounded</p>
     </div>
   );
 }
@@ -282,7 +273,7 @@ function QuizScreen({current,total,answers,onAnswer,onNext,onPrev}) {
 // ── PIXEL-ART GAME MAP ROADMAP ────────────────────────────────────────────────
 // Matches the inspo: winding road bottom→top, red location pins, step cards beside road,
 // trophy at top, START at bottom — all in galaxy purple/pink theme
-function GameMapRoadmap({steps, career}) {
+export function GameMapRoadmap({ steps, career }) {
   const [activeStep, setActiveStep] = useState(0);
 
   // The 5 pin positions along the winding road (in the SVG coordinate space 400×700)
@@ -642,6 +633,11 @@ function ResultsScreen({answers, onRestart}) {
         matchPercent: pct,
         hollandCode: code,
         recommendedPath: courses.path,
+        riasecScores: scores,
+        runnerUpCareers: ranked.slice(1, 5).map((r) => ({
+          career: r.career,
+          matchPercent: Math.round(r.sim * 100),
+        })),
       }),
     }).catch(() => {
       // no-op
@@ -816,21 +812,27 @@ export default function CareerRoadmap() {
     <div className="w-screen min-h-screen relative overflow-x-hidden">
       <GalaxyBg/>
 
-      {/* Back / Exit buttons */}
-      {screen!=='welcome' && (
-        <button
-          onClick={()=>screen==='quiz'?setScreen('welcome'):navigate('/landing')}
-          className="fixed top-6 left-6 z-20 flex items-center gap-2 px-4 py-2 rounded-xl text-gray-300 hover:text-white transition-all text-sm font-medium"
-          style={{background:'rgba(255,255,255,0.1)',border:'1.5px solid rgba(255,255,255,0.25)',backdropFilter:'blur(8px)'}}>
-          <ArrowLeft className="w-4 h-4"/> Back
-        </button>
-      )}
-      <button
-        onClick={()=>navigate('/landing')}
-        className="fixed top-6 right-6 z-20 flex items-center gap-2 px-4 py-2 rounded-xl text-gray-300 hover:text-white transition-all text-sm font-medium"
-        style={{background:'rgba(255,255,255,0.1)',border:'1.5px solid rgba(255,255,255,0.25)',backdropFilter:'blur(8px)'}}>
-        Exit
-      </button>
+      <div className="relative z-20 px-6 pt-6 max-w-6xl mx-auto">
+        <AppHeader />
+        {screen !== "welcome" && (
+          <button
+            type="button"
+            onClick={() =>
+              screen === "quiz"
+                ? setScreen("welcome")
+                : navigate("/landing")
+            }
+            className="mb-6 flex items-center gap-2 px-4 py-2 rounded-xl text-gray-300 hover:text-white transition-all text-sm font-medium w-fit"
+            style={{
+              background: "rgba(255,255,255,0.1)",
+              border: "1.5px solid rgba(255,255,255,0.25)",
+              backdropFilter: "blur(8px)",
+            }}
+          >
+            <ArrowLeft className="w-4 h-4" /> Back
+          </button>
+        )}
+      </div>
 
       {screen==='welcome' && <WelcomeScreen onStart={()=>setScreen('quiz')}/>}
       {screen==='quiz' && (
@@ -853,3 +855,5 @@ export default function CareerRoadmap() {
     </div>
   );
 }
+
+export { MODEL, DOMAIN_MAP, COURSE_INFO, RIASEC_COLORS, RIASEC_NAMES };

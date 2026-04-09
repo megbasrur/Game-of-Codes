@@ -9,6 +9,9 @@ import Signup from "./components/signup";
 import PlanetGame from "./components/PlanetGame";
 import CareerQuiz from "./components/CareerQuiz";
 import LeaderboardPage from "./components/LeaderboardPage";
+import GameProgressPage from "./components/GameProgressPage";
+import SummaryPage from "./components/SummaryPage";
+import CareerRoadmapPage from "./components/CareerRoadmapPage";
 
 function App() {
   return (
@@ -18,6 +21,9 @@ function App() {
          <Route path="/login" element={<Login/>} />
           <Route path="/signup" element={<Signup/>} />
         <Route path="/landing" element={<LandingPage/>} />
+        <Route path="/summary" element={<SummaryPage />} />
+        <Route path="/game-progress" element={<GameProgressPage />} />
+        <Route path="/career-roadmap" element={<CareerRoadmapPage />} />
         <Route
           path="/java"
           element={

@@ -13,6 +13,20 @@ const userSchema = new mongoose.Schema(
       hollandCode: { type: String },
       recommendedPath: [{ type: String }],
       completedAt: { type: Date },
+      riasecScores: {
+        R: { type: Number },
+        I: { type: Number },
+        A: { type: Number },
+        S: { type: Number },
+        E: { type: Number },
+        C: { type: Number },
+      },
+      runnerUpCareers: [
+        {
+          career: { type: String },
+          matchPercent: { type: Number },
+        },
+      ],
     },
   },
   { timestamps: true }

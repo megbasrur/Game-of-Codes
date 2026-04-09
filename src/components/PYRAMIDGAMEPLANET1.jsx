@@ -2,6 +2,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { apiRequest } from "../lib/api";
 import { useNavigate } from "react-router-dom";
+import { useRegisterGameStarted } from "../hooks/useRegisterGameStarted";
 
 /* Dessert Pyramid component (standalone)
    - paste this file into src/components/DessertPyramid.jsx
@@ -62,6 +63,7 @@ const castleUrl = "/mnt/data/f88f619f-5ac9-4fe4-b8f9-619adab7a357.png";
 
 export default function DessertPyramid() {
   const navigate = useNavigate();
+  useRegisterGameStarted("pyramid-variables");
   const [qIndex, setQIndex] = useState(0);
   const [selected, setSelected] = useState(null);
   const [feedback, setFeedback] = useState("");

@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import Beach from '../assets/beach.png';
 import { useNavigate, useParams } from 'react-router-dom';
 import { apiRequest } from "../lib/api";
+import { useRegisterGameStarted } from "../hooks/useRegisterGameStarted";
 
 const DebugBeachGame = () => {
   const navigate = useNavigate();
   const { planetId } = useParams();
+  useRegisterGameStarted("bug-hunt-bay");
 
   // Game state
   const [currentBugIndex, setCCurrentBugIndex] = useState(0);

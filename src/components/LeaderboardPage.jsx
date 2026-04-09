@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Crown, Trophy, Medal, ArrowLeft } from "lucide-react";
+import { Crown, Trophy, Medal } from "lucide-react";
 import { apiRequest } from "../lib/api";
+import AppHeader from "./AppHeader";
 
 function PodiumCard({ rank, row }) {
   const config = {
@@ -64,16 +65,10 @@ export default function LeaderboardPage() {
       <div className="absolute w-2/5 h-2/5 bottom-10 right-10 bg-pink-500/30 rounded-full blur-3xl animate-pulse" />
 
       <div className="relative z-10 max-w-6xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <button
-            onClick={() => navigate("/landing")}
-            className="flex items-center gap-2 text-white bg-black/40 border border-white/30 rounded-xl px-4 py-2 hover:bg-black/60"
-          >
-            <ArrowLeft className="w-4 h-4" /> Back
-          </button>
-          <h1 className="text-4xl font-extrabold text-white tracking-wide">Galaxy Leaderboard</h1>
-          <div className="w-20" />
-        </div>
+        <AppHeader />
+        <h1 className="text-4xl font-extrabold text-white tracking-wide text-center mb-8">
+          Galaxy Leaderboard
+        </h1>
 
         <div className="rounded-3xl bg-black/35 border border-white/20 p-8 mb-8">
           <div className="flex items-end justify-center gap-8">

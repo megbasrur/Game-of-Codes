@@ -3,12 +3,17 @@ import DebugBeachGame from "./bughuntbay";
 import MessageInBottle from "./messageinabottle";
 import DessertPyramid from "./PYRAMIDGAMEPLANET1";
 import PotionMixUp from "./PotionMixUp";
+import EnchantedMathGarden from "./EnchantedMathGarden";
+import HerosDillema from "./HerosDillema";
+import TalkToTroll from "./TalkToTroll";
+import PowerSelector from "./PowerSelector";
+import MultiverseMaze from "./MultiverseMaze";
 
-
-// Map each planet to its games array
+// Map each planet to its games array (planetId from URL is string key)
 const planetGames = {
   0: [DebugBeachGame, MessageInBottle, DessertPyramid],
-  1: [PotionMixUp] // Planet 1 games
+  1: [PotionMixUp, EnchantedMathGarden, TalkToTroll],
+  3: [HerosDillema, PowerSelector, MultiverseMaze],
 };
 
 export default function PlanetGame() {

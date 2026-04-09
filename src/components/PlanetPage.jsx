@@ -26,8 +26,20 @@ export default function PlanetPage() {
       name: "Variable Valley", 
       image: Planet3,
       desc: "Master variables, operators and expressions through fun challenges.",
-      games: [{ name: "Potion Mix-up", desc: "Learn variables, arithmetic operations, and naming rules by brewing magical potions."},
-         "Enchanted Math Garden","Talk to the Troll"] 
+      games: [
+        {
+          name: "Potion Mix-up",
+          desc: "Learn variables, arithmetic operations, and naming rules by brewing magical potions.",
+        },
+        {
+          name: "Enchanted Math Garden",
+          desc: "Practice expressions and operator order—fix Java code to grow flowers across an enchanted garden.",
+        },
+        {
+          name: "Talk to the Troll",
+          desc: "Answer riddles with Scanner and println—win four duels to get past the bridge troll.",
+        },
+      ],
     },
     { 
       name: "Treasure Island", 
@@ -35,11 +47,24 @@ export default function PlanetPage() {
       desc: "Explore loops with treasures, cannons and whirlpools!",
       games: ["Treasure Loop","Cannon Countdown","Escape the Whirlpool"] 
     },
-    { 
-      name: "Choices Multiverse", 
+    {
+      name: "Choices Multiverse",
       image: Planet5,
       desc: "Learn if-else conditions by exploring powerful choices across realities.",
-      games: ["Hero's Dilemma", "Power Selector","Multiverse Maze"] 
+      games: [
+        {
+          name: "Hero's Dilemma",
+          desc: "Guide a hero with if-else—choose ATTACK, SAVE, or PATROL when villains and civilians cross paths.",
+        },
+        {
+          name: "Power Selector",
+          desc: "Chain if-else with && and || to choose FIRE, SHIELD, or SPEED against each enemy type.",
+        },
+        {
+          name: "Multiverse Maze",
+          desc: "Solve branching paths with if-else—print ENTER, AVOID, WAIT, ESCAPE, and escape the collapsing multiverse.",
+        },
+      ],
     },
     { 
       name: "Castle of Challenges", 

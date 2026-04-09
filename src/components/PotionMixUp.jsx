@@ -1,9 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { apiRequest } from "../lib/api";
+import { useRegisterGameStarted } from "../hooks/useRegisterGameStarted";
+
+const POTION_GAME_ID = "potion-mix-up";
+const POTION_POINTS = 45;
 
 const PotionMixUp = () => {
   const navigate = useNavigate();
   const { planetId } = useParams();
+  useRegisterGameStarted(POTION_GAME_ID);
 
   /* ---------------- STATE ---------------- */
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -18,6 +24,8 @@ const PotionMixUp = () => {
 
   // ⭐ NEW: animation trigger
   const [animateBeaker, setAnimateBeaker] = useState(null);
+
+  const progressSubmittedRef = useRef(false);
 
   /* ---------------- POTIONS ---------------- */
   const potions = [
@@ -105,6 +113,25 @@ const PotionMixUp = () => {
     }
   }, [currentIndex]);
 
+  useEffect(() => {
+    if (!gameComplete || progressSubmittedRef.current) return;
+    progressSubmittedRef.current = true;
+    let cancelled = false;
+    (async () => {
+      try {
+        await apiRequest(`/progress/${POTION_GAME_ID}/complete`, {
+          method: "POST",
+          body: JSON.stringify({ score: POTION_POINTS, completed: true }),
+        });
+      } catch {
+        if (!cancelled) progressSubmittedRef.current = false;
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [gameComplete]);
+
   /* ---------------- CHECK ---------------- */
   const checkCode = () => {
     const normalize = (s) => s.trim().replace(/\s+/g, " ");
@@ -142,6 +169,7 @@ const PotionMixUp = () => {
   };
 
   const resetGame = () => {
+    progressSubmittedRef.current = false;
     setCurrentIndex(0);
     setPotionProgress([0, 0, 0, 0, 0]);
     setGameComplete(false);

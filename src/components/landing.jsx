@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { Play, User, Home, Award, Star, Trophy, Zap, ChevronRight } from 'lucide-react';
+import React, { useEffect } from 'react';
+import { Play } from 'lucide-react';
 import Mario from '../assets/mario.png';
 import Captain from '../assets/captain.png';
 import Darth from '../assets/darth.png';
-import Robot from '../assets/robot.png';
 
-// Example language images
 import JavaIcon from '../assets/java.png';
 import PythonIcon from '../assets/python.png';
 import HTMLIcon from '../assets/html.png';
@@ -16,69 +14,25 @@ import JSIcon from '../assets/js.png';
 
 import { useNavigate } from 'react-router-dom';
 import { apiRequest } from '../lib/api';
+import AppHeader from './AppHeader';
 
 export default function GamingLearningPlatform() {
   const navigate = useNavigate();
-  const [profile, setProfile] = useState(null);
-  const [leaderboard, setLeaderboard] = useState([]);
-  const [summary, setSummary] = useState({ totalScore: 0, completedGames: 0 });
-  const [careerResult, setCareerResult] = useState(null);
-  const [progressRows, setProgressRows] = useState([]);
-  const [gamesMap, setGamesMap] = useState({});
 
   useEffect(() => {
     let isMounted = true;
     const load = async () => {
       try {
-        const [me, board, progress, career, games] = await Promise.all([
-          apiRequest("/users/me"),
-          apiRequest("/leaderboard?limit=5"),
-          apiRequest("/progress/me"),
-          apiRequest("/career-result/me"),
-          apiRequest("/games"),
-        ]);
-        if (!isMounted) return;
-        setProfile(me.user);
-        setLeaderboard(board.leaderboard || []);
-        setSummary(progress.summary || { totalScore: 0, completedGames: 0 });
-        setProgressRows(progress.progress || []);
-        setCareerResult(career.careerResult || null);
-        setGamesMap(
-          Object.fromEntries((games.games || []).map((g) => [g.id, g.title]))
-        );
+        await apiRequest("/users/me");
       } catch {
-        navigate("/login");
+        if (isMounted) navigate("/login");
       }
     };
-
     load();
-    const timer = setInterval(async () => {
-      try {
-        const board = await apiRequest("/leaderboard?limit=5");
-        if (isMounted) setLeaderboard(board.leaderboard || []);
-      } catch {
-        // no-op
-      }
-    }, 7000);
-
     return () => {
       isMounted = false;
-      clearInterval(timer);
     };
   }, [navigate]);
-
-  const handleLogout = async () => {
-    try {
-      await apiRequest("/auth/logout", { method: "POST" });
-    } catch {
-      // no-op
-    } finally {
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("role");
-      localStorage.removeItem("user");
-      navigate("/");
-    }
-  };
 
   const skillLevels = [
     {
@@ -119,7 +73,6 @@ export default function GamingLearningPlatform() {
 
   return (
     <div className="w-screen min-h-screen relative overflow-hidden p-8">
-      {/* Galaxy Background */}
       <div
         className="absolute w-full h-full top-0 left-0"
         style={{
@@ -128,181 +81,17 @@ export default function GamingLearningPlatform() {
         }}
       ></div>
 
-      {/* Soft Nebula / Glow Shapes */}
       <div className="absolute w-3/5 h-3/5 top-10 left-20 bg-purple-500/50 rounded-full filter blur-3xl animate-pulse"></div>
       <div className="absolute w-2/5 h-2/5 bottom-10 right-10 bg-pink-500/40 rounded-full filter blur-3xl animate-pulse"></div>
 
-      {/* Header */}
-      <header className="relative z-10 flex items-center justify-between p-4 bg-black rounded-3xl backdrop-blur-sm border-b border-white/70 mb-10">
-        <div className="flex items-center space-x-4">
-          <div className="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center">
-            <User className="w-6 h-6 text-white" />
-          </div>
-          <span className="text-white font-medium text-xl">{profile?.name || "User"}</span>
-        </div>
-        <nav className="flex items-center space-x-8">
-          <button
-            onClick={() => navigate("/landing")}
-            className="text-white hover:text-purple-300 flex items-center gap-2"
-          >
-            <Home className="w-6 h-6" /> Home
-          </button>
-          <button
-            onClick={() => navigate("/leaderboard")}
-            className="text-white hover:text-purple-300 flex items-center gap-2"
-          >
-            <Award className="w-6 h-6" /> Leaderboard
-          </button>
-        </nav>
-        <div className="flex items-center space-x-4">
-          <div className="w-12 h-6 bg-purple-600 rounded-full relative">
-            <div className="w-5 h-5 bg-white rounded-full absolute top-0.5 right-0.5 transition-transform"></div>
-          </div>
-          <img src={Robot} alt="Robot" className="w-10 h-10" />
-        </div>
-        <button
-          onClick={handleLogout}
-          className="text-white bg-red-500 px-4 py-2 rounded-xl hover:bg-red-600 transition"
-        >
-          Logout
-        </button>
-      </header>
-
-      {/* Achievement Banner */}
-      <div className="mb-8 flex justify-center">
-        <div className="bg-gradient-to-r border-2 from-purple-700 to-pink-500 rounded-lg p-4 flex items-center justify-between w-full max-w-6xl shadow-lg animate-pulse">
-          <div className="flex items-center space-x-3">
-            <Star className="w-8 h-8 text-yellow-300" />
-            <span className="text-white font-bold text-2xl">
-              You reached Level 3! Click to see rewards
-            </span>
-          </div>
-          <Trophy className="w-10 h-10 text-yellow-300" />
-        </div>
+      <div className="relative z-10 max-w-6xl mx-auto">
+        <AppHeader />
       </div>
 
-      {/* ── CAREER / PARENTAL GUIDANCE BANNER ─────────────────── */}
-      <div className="relative z-10 mb-10 max-w-6xl mx-auto">
-        {profile?.features?.careerGuidance ? (
-        <div
-          className="relative overflow-hidden rounded-3xl border border-purple-500/40 shadow-2xl shadow-purple-900/50 cursor-pointer group"
-          onClick={() => {
-            if (profile?.features?.careerGuidance) {
-              navigate('/career-quiz');
-            }
-          }}
-        >
-          {/* Background gradient */}
-          <div
-            className="absolute inset-0"
-            style={{
-              background: 'linear-gradient(135deg, rgba(88,28,135,0.85) 0%, rgba(109,40,217,0.7) 40%, rgba(219,39,119,0.6) 100%)',
-            }}
-          />
-          {/* Animated glow orb */}
-          <div className="absolute -top-8 -right-8 w-48 h-48 bg-pink-500/30 rounded-full blur-3xl pointer-events-none group-hover:scale-110 transition-transform duration-500" />
-          <div className="absolute -bottom-6 left-12 w-36 h-36 bg-purple-500/25 rounded-full blur-2xl pointer-events-none" />
-
-          {/* Starfield dots */}
-          {[...Array(18)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute rounded-full bg-white pointer-events-none"
-              style={{
-                width: Math.random() * 2 + 1,
-                height: Math.random() * 2 + 1,
-                top: `${Math.random() * 100}%`,
-                left: `${Math.random() * 100}%`,
-                opacity: 0.2 + Math.random() * 0.3,
-                animation: `twinkle ${2 + Math.random() * 3}s ${Math.random() * 2}s ease-in-out infinite`,
-              }}
-            />
-          ))}
-
-          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6 px-8 py-7">
-            {/* Left: icon + text */}
-            <div className="flex items-center gap-5">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-700/50 flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
-                <Zap className="w-8 h-8 text-white" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xs font-bold tracking-widest text-purple-300 font-mono uppercase">New Feature</span>
-                  <span className="bg-yellow-400/20 border border-yellow-400/40 text-yellow-300 text-xs font-bold px-2 py-0.5 rounded-full font-mono">ML-Powered</span>
-                </div>
-                <h3 className="text-2xl font-extrabold text-white tracking-tight leading-tight">
-                  {profile?.features?.careerGuidance ? "Discover Your Career Path" : "Parental Guidance Enabled"}
-                </h3>
-                <p className="text-purple-200/70 text-sm mt-1 max-w-md leading-relaxed">
-                  {profile?.features?.careerGuidance
-                    ? "Take a 25-question assessment to discover your career path."
-                    : "Ages 8-12 are in guided mode: parental guidance is available and career guidance is hidden."}
-                </p>
-              </div>
-            </div>
-
-            {/* Right: stats + CTA */}
-            <div className="flex flex-col items-center md:items-end gap-4 flex-shrink-0">
-              <div className="flex gap-3">
-                {[["25","Questions"],["15","Careers"],["4","Courses"]].map(([val, lbl]) => (
-                  <div key={lbl} className="bg-white/10 border border-white/15 rounded-xl px-3 py-2 text-center backdrop-blur-sm">
-                    <div className="text-lg font-extrabold text-white font-mono leading-none">{val}</div>
-                    <div className="text-xs text-purple-300/70 mt-0.5">{lbl}</div>
-                  </div>
-                ))}
-              </div>
-              <button className="flex items-center gap-2 bg-white text-purple-900 font-bold px-6 py-3 rounded-2xl shadow-lg hover:bg-purple-50 transition-all group-hover:scale-105 duration-200 text-sm whitespace-nowrap">
-                {profile?.features?.careerGuidance ? "Start Assessment" : "Guided Mode"}
-                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </button>
-            </div>
-          </div>
-        </div>
-        ) : (
-          <div className="rounded-3xl border border-purple-500/40 shadow-2xl shadow-purple-900/50 bg-black/40 p-6 text-white">
-            <h3 className="text-2xl font-extrabold">Parental Guidance Mode</h3>
-            <p className="text-purple-200/80 mt-2">
-              Career path assessment is hidden for parents and children below 12.
-            </p>
-          </div>
-        )}
-      </div>
-      {/* ── END CAREER / PARENTAL GUIDANCE BANNER ─────────────── */}
-
-      <div className="relative z-10 mb-8 max-w-6xl mx-auto">
-        <div className="bg-black/40 border border-white/20 rounded-2xl p-4 text-white">
-          <h4 className="font-bold mb-2">Game Progress</h4>
-          {progressRows.length === 0 && (
-            <p className="text-sm text-purple-200">No games played yet.</p>
-          )}
-          {progressRows.map((row) => (
-            <div
-              key={row.gameId}
-              className="flex items-center justify-between bg-white/10 border border-white/15 rounded-xl px-3 py-2 mb-2"
-            >
-              <p className="text-sm font-semibold">{gamesMap[row.gameId] || row.gameId}</p>
-              <p className="text-sm text-purple-200">Highest Score: {row.bestScore || 0}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {profile?.features?.careerGuidance && careerResult && (
-        <div className="relative z-10 mb-8 max-w-6xl mx-auto bg-black/40 border border-white/20 rounded-2xl p-5 text-white">
-          <h4 className="font-bold mb-2">Latest Career Test Result</h4>
-          <p className="text-sm">Best Match: {careerResult.career}</p>
-          <p className="text-sm">Match: {careerResult.matchPercent}%</p>
-          <p className="text-sm">Holland Code: {careerResult.hollandCode}</p>
-          <p className="text-sm">Recommended Path: {(careerResult.recommendedPath || []).join(" -> ")}</p>
-        </div>
-      )}
-
-      {/* Skill Level Rows */}
-      <div className="space-y-12 relative z-10">
+      <div className="space-y-12 relative z-10 max-w-6xl mx-auto">
         {skillLevels.map((level) => (
           <div key={level.id} className="flex items-start gap-6">
 
-            {/* Level Div */}
             <div
               className={`relative w-15 h-70 bg-black rounded-4xl flex items-center border-1 border-gray-400 justify-center text-white font-bold shadow-lg`}
             >
@@ -314,7 +103,6 @@ export default function GamingLearningPlatform() {
               />
             </div>
 
-            {/* Skill Cards */}
             <div className="flex gap-6 flex-wrap">
               {level.skills.map((skill, index) => (
                 <div
@@ -322,7 +110,6 @@ export default function GamingLearningPlatform() {
                   className="w-sm h-70 bg-gradient-to-br from-gray-800 via-gray-900 to-gray-700 rounded-2xl shadow-2xl flex flex-col items-center justify-start cursor-pointer hover:scale-105 transition-transform relative overflow-hidden"
                   onClick={() => navigate(skill.path)}
                 >
-                  {/* Top Half - Custom Image */}
                   <div className="w-full h-1/2 flex items-center justify-center">
                     <img
                       src={skill.image}
@@ -331,7 +118,6 @@ export default function GamingLearningPlatform() {
                     />
                   </div>
 
-                  {/* Bottom Half - Info */}
                   <div className="w-full h-1/2 flex flex-col items-center justify-center space-y-2 p-3">
                     <span className="text-white font-bold text-xl">{skill.name}</span>
                     <div className="flex items-center space-x-2">
@@ -339,7 +125,7 @@ export default function GamingLearningPlatform() {
                       <span className="text-sm text-green-300 bg-gray-700 px-2 py-1 rounded-full">150 pts</span>
                     </div>
                     <div className="mt-2">
-                      <button className="bg-green-500 hover:bg-green-600 p-3 rounded-full shadow-lg">
+                      <button type="button" className="bg-green-500 hover:bg-green-600 p-3 rounded-full shadow-lg">
                         <Play className="w-5 h-5 text-white" />
                       </button>
                     </div>
@@ -351,25 +137,6 @@ export default function GamingLearningPlatform() {
         ))}
       </div>
 
-      {/* Tailwind Animations */}
-      <style>
-        {`
-          @keyframes twinkle {
-            0%, 100% { opacity: 0.15; }
-            50% { opacity: 0.5; }
-          }
-
-          @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-8px); }
-          }
-
-          @keyframes floatPlanet {
-            0%, 100% { transform: translateY(0px) scale(1); }
-            50% { transform: translateY(-6px) scale(1.02); }
-          }
-        `}
-      </style>
     </div>
   );
 }

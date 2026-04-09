@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import Editor from "@monaco-editor/react";
 import { apiRequest } from "../lib/api";
 import { useNavigate } from "react-router-dom";
+import { useRegisterGameStarted } from "../hooks/useRegisterGameStarted";
 
 /* -------------------------
    Helper: escape RegExp
@@ -130,6 +131,7 @@ function BottleSVG() {
 ------------------------- */
 export default function MessageInBottle({ awardXp = 10 }) {
   const navigate = useNavigate();
+  useRegisterGameStarted("message-in-a-bottle");
   const [code, setCode] = useState("");
   const [feedback, setFeedback] = useState("");
   const [xp, setXp] = useState(0);

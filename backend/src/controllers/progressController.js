@@ -14,15 +14,23 @@ export async function getMyProgress(req, res) {
 
 export async function completeGame(req, res) {
   const { gameId } = req.params;
-  const { score = 0, completed = true } = req.body || {};
+  const body = req.body || {};
+  const scoreIn = Number(body.score) || 0;
+  const completedFlag = body.completed === undefined ? true : Boolean(body.completed);
   const game = await Game.findOne({ id: gameId, isActive: true });
   if (!game) return res.status(404).json({ message: "Game not found" });
   const existing = await Progress.findOne({ userId: req.user._id, gameId });
-  const finalScore = Math.max(Number(score) || 0, game.points);
+
+  const finalScore = completedFlag
+    ? Math.max(scoreIn, game.points)
+    : Math.max(scoreIn, existing?.bestScore || 0);
+
   if (existing) {
-    existing.attempts += 1;
+    if (completedFlag || scoreIn > 0) {
+      existing.attempts += 1;
+    }
     existing.bestScore = Math.max(existing.bestScore, finalScore);
-    existing.completed = Boolean(completed) || existing.completed;
+    existing.completed = completedFlag || existing.completed;
     await existing.save();
   } else {
     await Progress.create({
@@ -30,7 +38,7 @@ export async function completeGame(req, res) {
       gameId,
       attempts: 1,
       bestScore: finalScore,
-      completed: Boolean(completed),
+      completed: completedFlag,
     });
   }
   await emitLeaderboardUpdate();
